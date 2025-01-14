@@ -1,0 +1,11 @@
+client/node_modules
+server/node_modules
+client/dist/
+server/dist/
+client/.env
+server/.env
+client/.next/
+
+.env.local
+client/public
+server/prisma/seedData
