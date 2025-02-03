@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
 
 // File filter
 const fileFilter = (
-  req: Request,
+  req: Express.Request,
   file: Express.Multer.File,
   cb: multer.FileFilterCallback
 ) => {
@@ -90,70 +90,74 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
 export const postUser = async (req: Request, res: Response) => {
   try {
     // Handle file upload with multer
-    upload.single("profilePicture")(req, res, async (err) => {
-      if (err) {
-        console.error("Multer Error:", err);
-        return res.status(400).json({
-          message: "File upload error",
-          error: err instanceof Error ? err.message : "Unknown error",
-        });
-      }
+    (upload.single("profilePicture") as any)(
+      req,
+      res,
+      async (err: Error | null) => {
+        if (err) {
+          console.error("Multer Error:", err);
+          return res.status(400).json({
+            message: "File upload error",
+            error: err instanceof Error ? err.message : "Unknown error",
+          });
+        }
 
-      const {
-        username,
-        teamId,
-        email,
-        fullName,
-        role = StaffRole.STAFF,
-      } = req.body;
-      let profilePictureUrl = "";
-      // Convert uploaded file to base64 if exists
-      if (req.file) {
-        const filePath = req.file.path;
-        const fileBuffer = fs.readFileSync(filePath);
-        const base64Image = `data:${
-          req.file.mimetype
-        };base64,${fileBuffer.toString("base64")}`;
-
-        // Optional: Save base64 to a specific directory or process further
-        profilePictureUrl = base64Image;
-
-        // Clean up temporary file
-        fs.unlinkSync(filePath);
-      }
-
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          OR: [{ username }, { email }],
-        },
-      });
-
-      if (existingUser) {
-        res.status(409).json({ message: "Username or email already exists" });
-        return;
-      }
-
-      const randomPassword = generateRandomPassword();
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(randomPassword, salt);
-
-      const newUser = await prisma.user.create({
-        data: {
-          userId: generateFiveDigitNumber(),
+        const {
           username,
-          password: hashedPassword,
-          profilePictureUrl,
-          teamId: Number(teamId),
-          role,
+          teamId,
           email,
           fullName,
-        },
-      });
+          role = StaffRole.STAFF,
+        } = req.body;
+        let profilePictureUrl = "";
+        // Convert uploaded file to base64 if exists
+        if (req.file) {
+          const filePath = req.file.path;
+          const fileBuffer = fs.readFileSync(filePath);
+          const base64Image = `data:${
+            req.file.mimetype
+          };base64,${fileBuffer.toString("base64")}`;
 
-      // Send password via email
-      // await emailService.sendPasswordToUser(email, randomPassword);
-      res.json({ message: "User Created Successfully", newUser });
-    });
+          // Optional: Save base64 to a specific directory or process further
+          profilePictureUrl = base64Image;
+
+          // Clean up temporary file
+          fs.unlinkSync(filePath);
+        }
+
+        const existingUser = await prisma.user.findFirst({
+          where: {
+            OR: [{ username }, { email }],
+          },
+        });
+
+        if (existingUser) {
+          res.status(409).json({ message: "Username or email already exists" });
+          return;
+        }
+
+        const randomPassword = generateRandomPassword();
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+        const newUser = await prisma.user.create({
+          data: {
+            userId: generateFiveDigitNumber(),
+            username,
+            password: hashedPassword,
+            profilePictureUrl,
+            teamId: Number(teamId),
+            role,
+            email,
+            fullName,
+          },
+        });
+
+        // Send password via email
+        // await emailService.sendPasswordToUser(email, randomPassword);
+        res.json({ message: "User Created Successfully", newUser });
+      }
+    );
   } catch (error: unknown) {
     if (error instanceof Error) {
       res
