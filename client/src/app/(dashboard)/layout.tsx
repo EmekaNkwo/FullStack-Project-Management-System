@@ -33,29 +33,26 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     }
   });
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white/50 dark:bg-black/50">
-        <Loader />
-        <div className="ml-2 text-lg font-semibold text-gray-800 dark:text-gray-100">
-          Loading...
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex min-h-screen w-full bg-gray-50 text-gray-900">
-      <Sidebar />
-      <main
-        className={`flex w-full flex-col bg-gray-50 dark:bg-dark-bg ${
-          isSidebarCollapsed ? "" : "md:pl-64"
-        }`}
-      >
-        <Navbar />
-        {children}
-      </main>
-    </div>
+    <>
+      {isLoading ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/50 dark:bg-black/50">
+          <Loader />
+        </div>
+      ) : (
+        <div className="flex min-h-screen w-full bg-gray-50 text-gray-900">
+          <Sidebar />
+          <main
+            className={`flex w-full flex-col bg-gray-50 dark:bg-dark-bg ${
+              isSidebarCollapsed ? "" : "md:pl-64"
+            }`}
+          >
+            <Navbar />
+            {children}
+          </main>
+        </div>
+      )}
+    </>
   );
 };
 
