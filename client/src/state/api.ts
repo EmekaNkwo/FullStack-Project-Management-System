@@ -1,4 +1,3 @@
-import supabase from "@/lib/supabase";
 import { storageFactory } from "@/lib/utils";
 import { Project, SearchResults, Task, Team, User } from "@/shared/models";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -34,24 +33,6 @@ export const api = createApi({
     getMe: build.query<User, void>({
       query: () => "auth/me",
       providesTags: ["AuthUser"],
-    }),
-    getAuthUser: build.query({
-      queryFn: async (_, _queryApi, _extraoptions, fetchWithBQ) => {
-        try {
-          const { data: userData } = await supabase.auth.getUser();
-          if (!userData) throw new Error("No user found");
-          const { user } = userData;
-
-          const userDetailsResponse = await fetchWithBQ(
-            `users/${user?.user_metadata?.userId}`,
-          );
-          const userDetails = userDetailsResponse.data as User;
-
-          return { data: { user, userSub: user?.id, userDetails } };
-        } catch (error: any) {
-          return { error: error.message || "Could not fetch user data" };
-        }
-      },
     }),
     getProjects: build.query<Project[], void>({
       query: () => "projects",
@@ -143,7 +124,7 @@ export const {
   useGetUsersQuery,
   useGetTeamsQuery,
   useGetTasksByUserQuery,
-  useGetAuthUserQuery,
+  // useGetAuthUserQuery,
   useCreateUserMutation,
   useCreateTeamMutation,
   useLoginMutation,

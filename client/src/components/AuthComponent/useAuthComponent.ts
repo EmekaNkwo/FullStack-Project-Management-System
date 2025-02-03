@@ -1,9 +1,8 @@
 "use client";
 import { useAppDispatch } from "@/app/redux";
-import supabase from "@/lib/supabase";
-import { generateNumericUUID, storageFactory } from "@/lib/utils";
+import { storageFactory } from "@/lib/utils";
 import { notify } from "@/shared";
-import { setAccessToken, setCurrentUser } from "@/state";
+import { setCurrentUser } from "@/state";
 import { useLoginMutation, useRegisterMutation } from "@/state/api";
 import { useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
@@ -113,7 +112,15 @@ const useAuthComponent = () => {
           variant: "success",
         },
       );
-      storageFactory().setItem("product_accessToken", loginData?.token ?? "");
+      if (isLoginSuccess) {
+        storageFactory().setItem("product_accessToken", loginData?.token ?? "");
+      } else {
+        storageFactory().setItem(
+          "product_accessToken",
+          registerData?.token ?? "",
+        );
+      }
+
       dispatch(setCurrentUser((loginData?.user || registerData?.user) ?? null));
       router.push("/home");
     } else if (isError) {

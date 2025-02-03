@@ -2,6 +2,15 @@
 
 This is a fullstack project management dashboard built with Next.js, Tailwind CSS, Redux Toolkit, Material UI Data Grid, Nodejs, Express, TypeScript, Prisma, PostgreSQL, and JWT.
 
+## Live Demo
+
+[https://fullstack-project-management.vercel.app/](https://fullstack-project-management.vercel.app/)
+
+### Credentials
+
+- **Email**: `test409@test.com`
+- **Password**: `Password1`
+
 ## Technology Stack
 
 - **Frontend**: Next.js, Tailwind CSS, Redux Toolkit, Redux Toolkit Query, Material UI Data Grid
