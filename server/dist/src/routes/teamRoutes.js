@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const teamController_1 = require("../controllers/teamController");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const router = (0, express_1.Router)();
+router.get("/", authMiddleware_1.authenticateToken, teamController_1.getTeams);
+router.post("/", authMiddleware_1.authenticateToken, teamController_1.createTeam);
+router.get("/:teamId", authMiddleware_1.authenticateToken, teamController_1.getTeam);
+exports.default = router;
