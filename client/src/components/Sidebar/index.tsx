@@ -105,16 +105,18 @@ const Sidebar = () => {
           )}
         </button>
         {/* PROJECTS LIST */}
-        {showProjects && projects?.length === 0
-          ? "No projects"
-          : projects?.map((project) => (
-              <SidebarLink
-                key={project.id}
-                icon={Briefcase}
-                label={project.name}
-                href={`/projects/${project.id}`}
-              />
-            ))}
+        {showProjects && projects?.length === 0 ? (
+          <span className="px-8 py-2">No projects</span>
+        ) : (
+          projects?.map((project) => (
+            <SidebarLink
+              key={project.id}
+              icon={Briefcase}
+              label={project.name}
+              href={`/projects/${project.id}`}
+            />
+          ))
+        )}
 
         {/* PRIORITIES LINKS */}
         <button

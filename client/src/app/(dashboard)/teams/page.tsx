@@ -46,9 +46,6 @@ const Teams = () => {
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
   const [isModalNewTeamOpen, setIsModalNewTeamOpen] = useState(false);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error fetching teams</div>;
-
   return (
     <div className="flex w-full flex-col p-8">
       <ModalNewTeam
@@ -67,16 +64,22 @@ const Teams = () => {
         }
       />
       <div style={{ height: 650, width: "100%" }}>
-        <DataGrid
-          rows={teams || []}
-          columns={columns}
-          pagination
-          slots={{
-            toolbar: CustomToolbar,
-          }}
-          className={dataGridClassNames}
-          sx={dataGridSxStyles(isDarkMode)}
-        />
+        {isError ? (
+          <div>Error fetching teams</div>
+        ) : isLoading ? (
+          <div className="loading">Loading...</div>
+        ) : (
+          <DataGrid
+            rows={teams || []}
+            columns={columns}
+            pagination
+            slots={{
+              toolbar: CustomToolbar,
+            }}
+            className={dataGridClassNames}
+            sx={dataGridSxStyles(isDarkMode)}
+          />
+        )}
       </div>
     </div>
   );

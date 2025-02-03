@@ -41,18 +41,18 @@ const BoardView = ({ id, setIsModalNewTaskOpen }: BoardProps) => {
     [updateTaskStatus],
   );
 
-  if (isError) return <div>An error occurred while fetching tasks</div>;
-
   useEffect(() => {
-    if (isUpdateSuccess) {
-      refetch();
-    }
-  }, [isUpdateSuccess, refetch]);
+    refetch();
+  }, [isUpdateSuccess]);
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-4">
-        {isLoading ? (
+        {isError ? (
+          <div className="col-span-4">
+            An error occurred while fetching tasks
+          </div>
+        ) : isLoading ? (
           <div>Loading...</div>
         ) : (
           taskStatus.map((status) => (

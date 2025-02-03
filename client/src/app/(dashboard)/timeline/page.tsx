@@ -87,7 +87,7 @@ const Timeline = () => {
           {isLoading ? (
             <div className="py-4 text-center">Loading...</div>
           ) : projects?.length === 0 ? (
-            <div className="py-4 text-center">No projects found</div>
+            <div className="p-4 text-center">No projects found</div>
           ) : (
             <Gantt
               tasks={ganttTasks}

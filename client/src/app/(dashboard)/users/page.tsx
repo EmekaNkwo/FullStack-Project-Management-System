@@ -79,17 +79,23 @@ const Users = () => {
       />
 
       <div style={{ height: 650, width: "100%" }}>
-        <DataGrid
-          rows={users || []}
-          columns={columns}
-          getRowId={(row) => row.userId}
-          pagination
-          slots={{
-            toolbar: CustomToolbar,
-          }}
-          className={dataGridClassNames}
-          sx={dataGridSxStyles(isDarkMode)}
-        />
+        {isError ? (
+          <div>Error fetching users</div>
+        ) : isLoading ? (
+          <div className="loading">Loading...</div>
+        ) : (
+          <DataGrid
+            rows={users || []}
+            columns={columns}
+            getRowId={(row) => row.userId}
+            pagination
+            slots={{
+              toolbar: CustomToolbar,
+            }}
+            className={dataGridClassNames}
+            sx={dataGridSxStyles(isDarkMode)}
+          />
+        )}
       </div>
     </div>
   );

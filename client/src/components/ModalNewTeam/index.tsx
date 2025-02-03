@@ -1,14 +1,7 @@
 import Modal from "@/components/Modal";
-import { useCreateProjectMutation, useCreateTeamMutation } from "@/state/api";
+import { useCreateTeamMutation, useGetUsersQuery } from "@/state/api";
 import React, { useEffect, useState } from "react";
-import { formatISO } from "date-fns";
-import {
-  DateInput,
-  notify,
-  SelectInput,
-  TextAreaInput,
-  TextInput,
-} from "@/shared";
+import { notify, SelectInput, TextInput } from "@/shared";
 import { useSnackbar } from "notistack";
 type Props = {
   isOpen: boolean;
@@ -18,9 +11,23 @@ type Props = {
 const ModalNewTeam = ({ isOpen, onClose }: Props) => {
   const [createTeam, { isLoading, isSuccess, isError, error }] =
     useCreateTeamMutation();
-  const [teamName, setTeamName] = useState("");
-  const [productOwner, setProductOwner] = useState(0);
-  const [productManager, setProductManager] = useState(0);
+  const initialData = {
+    teamName: "",
+    productOwner: 0,
+    productManager: 0,
+  };
+  const [teamData, setTeamData] = useState(initialData);
+
+  const {
+    data: users,
+    isLoading: usersLoading,
+    isError: usersIsError,
+  } = useGetUsersQuery();
+
+  const projectManagers = users?.filter(
+    (user) => user.role === "PROJECT_MANAGER",
+  );
+  const productOwners = users?.filter((user) => user.role === "PRODUCT_OWNER");
 
   const { enqueueSnackbar } = useSnackbar(); // MUI Snackbar hook
 
@@ -36,27 +43,30 @@ const ModalNewTeam = ({ isOpen, onClose }: Props) => {
   }, [isSuccess, isError]);
 
   const handleSubmit = async () => {
-    if (!teamName) return;
+    if (!teamData.teamName) return;
 
     await createTeam({
-      teamName,
-      productOwnerUserId: productOwner === 0 ? undefined : productOwner,
-      projectManagerUserId: productManager === 0 ? undefined : productManager,
+      teamName: teamData.teamName,
+      productOwnerUserId:
+        teamData.productOwner === 0 ? undefined : teamData.productOwner,
+      projectManagerUserId:
+        teamData.productManager === 0 ? undefined : teamData.productManager,
     });
   };
 
   const isFormValid = () => {
-    return teamName;
+    return teamData.teamName;
   };
 
   useEffect(() => {
     if (isSuccess) {
+      setTeamData(initialData);
       onClose();
     }
   }, [isSuccess]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} name="Create New Project">
+    <Modal isOpen={isOpen} onClose={onClose} name="Create New Team">
       <form
         className="mt-4 flex flex-col space-y-6"
         onSubmit={(e) => {
@@ -66,22 +76,38 @@ const ModalNewTeam = ({ isOpen, onClose }: Props) => {
       >
         <TextInput
           title="Team Name"
-          value={teamName}
-          onChange={(e) => setTeamName(e.target.value)}
+          value={teamData.teamName}
+          onChange={(e) =>
+            setTeamData({ ...teamData, teamName: e.target.value })
+          }
         />
         <SelectInput
           title="Product Owner"
-          value={productOwner}
-          onChange={(e) => setProductOwner(Number(e.target.value))}
+          value={teamData.productOwner}
+          onChange={(e) =>
+            setTeamData({ ...teamData, productOwner: Number(e.target.value) })
+          }
         >
           <option value={undefined}>Select Product Owner</option>
+          {productOwners?.map((user) => (
+            <option key={user.userId} value={user.userId}>
+              {user.fullName}
+            </option>
+          ))}
         </SelectInput>
         <SelectInput
           title="Project Manager"
-          value={productManager}
-          onChange={(e) => setProductManager(Number(e.target.value))}
+          value={teamData.productManager}
+          onChange={(e) =>
+            setTeamData({ ...teamData, productManager: Number(e.target.value) })
+          }
         >
           <option value={undefined}>Select Project Manager</option>
+          {projectManagers?.map((user) => (
+            <option key={user.userId} value={user.userId}>
+              {user.fullName}
+            </option>
+          ))}
         </SelectInput>
 
         <button
