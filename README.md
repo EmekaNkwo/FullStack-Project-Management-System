@@ -4,7 +4,7 @@ This is a fullstack project management dashboard built with Next.js, Tailwind CS
 
 ## Live Demo
 
-[https://fullstack-project-management.vercel.app/](https://fullstack-project-management.vercel.app/)
+[https://full-stack-project-management-system.vercel.app/auth](https://full-stack-project-management-system.vercel.app/auth)
 
 ### Credentials
 
